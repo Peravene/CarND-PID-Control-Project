@@ -73,8 +73,14 @@ int main() {
            */
           pid.UpdateError(cte);
           double steer_value = pid.TotalError();
-
           double throttle = 0.2;
+
+          // reset
+          double lateralOffsetReset = 2.5;
+          if (abs(cte) > lateralOffsetReset) {
+            std::string reset_msg = "42[\"reset\",{}]";
+            ws.send(reset_msg.data(), reset_msg.length(), uWS::OpCode::TEXT);
+          }
 
           // DEBUG
           std::cout << "CTE: " << cte << " Steering Value: " << steer_value
