@@ -20,6 +20,12 @@ class PID {
   void Init(double Kp_, double Ki_, double Kd_);
 
   /**
+   * Calculate the control value
+   * @param cte The current cross track error
+   */
+  double control(double cte);
+
+  /**
    * Update the PID error variables given cross track error.
    * @param cte The current cross track error
    */
@@ -41,10 +47,16 @@ class PID {
 
   /**
    * PID Coefficients
-   */ 
+   */
   double Kp;
   double Ki;
   double Kd;
+
+  /**
+   * PID internal values
+   */
+  double prev_Cte;
+  double int_Cte;
 };
 
 #endif  // PID_H
