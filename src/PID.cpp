@@ -9,17 +9,21 @@ PID::PID() {}
 PID::~PID() {}
 
 void PID::Init(double Kp_, double Ki_, double Kd_) {
-  Kp = Kp_;
-  Ki = Ki_;
-  Kd = Kd_;
+  K[0] = Kp_;
+  K[1] = Ki_;
+  K[2] = Kd_;
 
   p_error = 0.0;
   i_error = 0.0;
   d_error = 0.0;
+  error = 0.0;
 
-  Dp = 0.0;
-  Di = 0.0;
-  Dd = 0.0;
+  D[0] = 1.0;
+  D[1] = 1.0;
+  D[2] = 1.0;
+
+  tunedParamIndex = 0;
+  bestError = 10000000;
 }
 
 void PID::UpdateError(double cte) {
@@ -29,8 +33,25 @@ void PID::UpdateError(double cte) {
 }
 
 double PID::TotalError() {
-  double error = -Kp * p_error - Kd * d_error - Ki * i_error;
-  return error;
+  double result = -K[0] * p_error - K[1] * d_error - K[2] * i_error;
+  error += result * result;
+  return result;
 }
 
-void PID::Twiddle() {}
+double PID::getSumDp() { return D[0] + D[1] + D[2]; }
+
+void PID::Twiddle() {
+  // 1. increase
+  if (bestError > error) {
+    bestError = error;
+    D[tunedParamIndex] *= 1.1;
+  } else {
+    K[tunedParamIndex] -= D[tunedParamIndex];
+    D[tunedParamIndex] *= 0.9;
+  }
+  tunedParamIndex += 1;
+  tunedParamIndex = tunedParamIndex % 3;
+  K[tunedParamIndex] += D[tunedParamIndex];
+
+  twiddled = true;
+}

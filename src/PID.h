@@ -36,27 +36,32 @@ class PID {
    */
   void Twiddle();
 
- private:
+  /**
+   * Calculates the sum of the twiddle coefficients
+   * @output The sum
+   */
+  double getSumDp();
+
   /**
    * PID Errors
    */
   double p_error;
   double i_error;
   double d_error;
+  double error;
 
   /**
    * PID Coefficients
    */
-  double Kp;
-  double Ki;
-  double Kd;
+  double K[3];
 
   /**
-   * Twiddle Coefficients
+   * Twiddle Variables
    */
-  double Dp;
-  double Di;
-  double Dd;
+  double D[3];
+  bool tunedParamIndex;
+  double bestError;
+  bool twiddled = false;
 };
 
 #endif  // PID_H

@@ -38,9 +38,9 @@ int main() {
   /**
    * INIT PID Coefficients
    */
-  double Kp_init = 0.02;
-  double Ki_init = 0.00;
-  double Kd_init = 0.01;
+  double Kp_init = 1.0;
+  double Ki_init = 0.0;
+  double Kd_init = 0.0;
   pid.Init(Kp_init, Ki_init, Kd_init);
 
   // PID pid2;
@@ -77,20 +77,26 @@ int main() {
 
           // reset
           double lateralOffsetReset = 2.5;
-          if (abs(cte) > lateralOffsetReset) {
+          if ((abs(cte) > lateralOffsetReset) && !pid.twiddled) {
+            pid.Twiddle();
+            std::cout << "Kp: " << pid.K[0] << " Kd: " << pid.K[1]
+                      << " Ki: " << pid.K[2] << " besterror: " << pid.bestError
+                      << std::endl;
             std::string reset_msg = "42[\"reset\",{}]";
             ws.send(reset_msg.data(), reset_msg.length(), uWS::OpCode::TEXT);
+          } else if ((abs(cte) < lateralOffsetReset - 1) && pid.twiddled) {
+            pid.twiddled = false;
           }
 
           // DEBUG
-          std::cout << "CTE: " << cte << " Steering Value: " << steer_value
-                    << std::endl;
+          // std::cout << "CTE: " << cte << " Steering Value: " << steer_value
+          //           << std::endl;
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
           msgJson["throttle"] = throttle;
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
-          std::cout << msg << std::endl;
+          // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }  // end "telemetry" if
       } else {
