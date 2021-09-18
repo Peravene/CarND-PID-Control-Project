@@ -38,9 +38,10 @@ int main() {
   /**
    * INIT PID Coefficients
    */
-  double Kp_init = 1.0;
-  double Ki_init = 0.0;
+  double Kp_init = 0.1891;
+  double Ki_init = 0.4641;
   double Kd_init = 0.0;
+
   pid.Init(Kp_init, Ki_init, Kd_init);
 
   // PID pid2;
@@ -75,22 +76,41 @@ int main() {
           double steer_value = pid.TotalError();
           double throttle = 0.2;
 
-          // reset
-          double lateralOffsetReset = 2.5;
-          if ((abs(cte) > lateralOffsetReset) && !pid.twiddled) {
+          bool doReset = false;
+          if ((abs(cte) > pid.latLimit) && !pid.twiddled) {
+            // exceeded the first time the lateral limits in this round
+
+            // adjust the PID gains
             pid.Twiddle();
-            std::cout << "Kp: " << pid.K[0] << " Kd: " << pid.K[1]
-                      << " Ki: " << pid.K[2] << " besterror: " << pid.bestError
-                      << std::endl;
-            std::string reset_msg = "42[\"reset\",{}]";
-            ws.send(reset_msg.data(), reset_msg.length(), uWS::OpCode::TEXT);
-          } else if ((abs(cte) < lateralOffsetReset - 1) && pid.twiddled) {
+
+            doReset = true;
+
+          } else if ((abs(cte) < pid.latLimit * 0.5) && pid.twiddled) {
             pid.twiddled = false;
           }
 
-          // DEBUG
-          // std::cout << "CTE: " << cte << " Steering Value: " << steer_value
-          //           << std::endl;
+          // one lap done
+          if (pid.counter > 1600) {
+            pid.latLimit -= 0.3;
+            if (pid.latLimit < 0.3) {
+              pid.latLimit = 0.3;
+            }
+            doReset = true;
+            pid.bestRMS = pid.counter;
+            pid.counter = 0;
+          }
+
+          if (doReset) {
+            std::cout << "counter:" << pid.counter << " Kp:" << pid.K[0]
+                      << " Kd:" << pid.K[1] << " Ki:" << pid.K[2]
+                      << " Dp:" << pid.D[0] << " Dd:" << pid.D[1]
+                      << " Di:" << pid.D[2] << " bestRMS:" << pid.bestRMS
+                      << " latLimit:" << pid.latLimit << std::endl;
+
+            // reset the simulation
+            std::string reset_msg = "42[\"reset\",{}]";
+            ws.send(reset_msg.data(), reset_msg.length(), uWS::OpCode::TEXT);
+          }
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;

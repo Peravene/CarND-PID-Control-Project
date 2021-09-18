@@ -59,9 +59,11 @@ class PID {
    * Twiddle Variables
    */
   double D[3];
-  bool tunedParamIndex;
-  double bestError;
+  int tunedParamIndex;
+  double bestRMS;
+  int counter;
   bool twiddled = false;
+  double latLimit;
 };
 
 #endif  // PID_H
