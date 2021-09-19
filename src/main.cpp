@@ -31,6 +31,9 @@ string hasData(string s) {
   return "";
 }
 
+bool doReset = false;
+bool isResetSent = false;
+
 int main() {
   uWS::Hub h;
 
@@ -38,9 +41,16 @@ int main() {
   /**
    * INIT PID Coefficients
    */
-  double Kp_init = 0.1891;
+
+  // 2.2 - latLimit
+  double Kp_init = 0.170478;
   double Ki_init = 0.4641;
-  double Kd_init = 0.0;
+  double Kd_init = 0;
+
+  // 2.5 - latLimit
+  // double Kp_init = 0.1891;
+  // double Ki_init = 0.4641;
+  // double Kd_init = 0;
 
   pid.Init(Kp_init, Ki_init, Kd_init);
 
@@ -67,49 +77,67 @@ int main() {
           // double speed = std::stod(j[1]["speed"].get<string>());
           // double angle = std::stod(j[1]["steering_angle"].get<string>());
           /**
-           * TODO: Calculate steering value here, remember the steering value is
+           * Calculate steering value here, remember the steering value is
            *   [-1, 1].
            * NOTE: Feel free to play around with the throttle and speed.
            *   Maybe use another PID controller to control the speed!
            */
+
+          // calculate the steering angle out of the conroller
           pid.UpdateError(cte);
           double steer_value = pid.TotalError();
+          // contant speed
           double throttle = 0.2;
 
-          bool doReset = false;
-          if ((abs(cte) > pid.latLimit) && !pid.twiddled) {
-            // exceeded the first time the lateral limits in this round
+          bool doPIDTuning = false;
+          if (doPIDTuning && !doReset) {
+            // left the lane
+            if (abs(cte) > pid.latLimit) {
+              // exceeded the first time the lateral limits in this round
 
-            // adjust the PID gains
-            pid.Twiddle();
+              // adjust the PID gains
+              pid.Twiddle();
 
-            doReset = true;
-
-          } else if ((abs(cte) < pid.latLimit * 0.5) && pid.twiddled) {
-            pid.twiddled = false;
-          }
-
-          // one lap done
-          if (pid.counter > 1600) {
-            pid.latLimit -= 0.3;
-            if (pid.latLimit < 0.3) {
-              pid.latLimit = 0.3;
+              doReset = true;
             }
-            doReset = true;
-            pid.bestRMS = pid.counter;
-            pid.counter = 0;
+
+            // one lap done
+            int oneLapCounts = 1500;
+            if (pid.counter > oneLapCounts) {
+              // lower the limit
+              pid.latLimit -= 0.3;
+              if (pid.latLimit < 0.3) {
+                pid.latLimit = 0.3;
+              }
+
+              doReset = true;
+              pid.maxCounter = 0;
+              pid.counter = 0;
+            }
           }
 
+          // safely reset the simulator once
           if (doReset) {
-            std::cout << "counter:" << pid.counter << " Kp:" << pid.K[0]
-                      << " Kd:" << pid.K[1] << " Ki:" << pid.K[2]
-                      << " Dp:" << pid.D[0] << " Dd:" << pid.D[1]
-                      << " Di:" << pid.D[2] << " bestRMS:" << pid.bestRMS
-                      << " latLimit:" << pid.latLimit << std::endl;
+            if (!isResetSent) {
+              std::cout << "counter:" << pid.counter << " Kp:" << pid.K[0]
+                        << " Kd:" << pid.K[1] << " Ki:" << pid.K[2]
+                        << " Dp:" << pid.D[0] << " Dd:" << pid.D[1]
+                        << " Di:" << pid.D[2]
+                        << " maxCounter:" << pid.maxCounter
+                        << " latLimit:" << pid.latLimit << std::endl;
 
-            // reset the simulation
-            std::string reset_msg = "42[\"reset\",{}]";
-            ws.send(reset_msg.data(), reset_msg.length(), uWS::OpCode::TEXT);
+              // reset the simulation
+              std::string reset_msg = "42[\"reset\",{}]";
+              ws.send(reset_msg.data(), reset_msg.length(), uWS::OpCode::TEXT);
+
+              isResetSent = true;
+            }
+
+            if (abs(cte) < pid.latLimit * 0.2) {
+              // wait until reset is finished
+              doReset = false;
+              isResetSent = false;
+            }
           }
 
           json msgJson;

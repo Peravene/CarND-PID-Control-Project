@@ -48,7 +48,6 @@ class PID {
   double p_error;
   double i_error;
   double d_error;
-  double error;
 
   /**
    * PID Coefficients
@@ -60,9 +59,8 @@ class PID {
    */
   double D[3];
   int tunedParamIndex;
-  double bestRMS;
+  double maxCounter;
   int counter;
-  bool twiddled = false;
   double latLimit;
 };
 

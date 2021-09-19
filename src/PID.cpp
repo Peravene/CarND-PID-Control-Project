@@ -20,16 +20,15 @@ void PID::Init(double Kp_, double Ki_, double Kd_) {
   p_error = 0.0;
   i_error = 0.0;
   d_error = 0.0;
-  error = 0.0;
 
-  D[0] = 0.09801;
-  D[1] = 0.1331;
+  D[0] = 1;
+  D[1] = 1;
   D[2] = 0.001;
 
   tunedParamIndex = 0;
-  bestRMS = 0;
+  maxCounter = 0;
   counter = 0;
-  latLimit = 2.5;
+  latLimit = 2.2;
 }
 
 void PID::UpdateError(double cte) {
@@ -40,7 +39,6 @@ void PID::UpdateError(double cte) {
 
 double PID::TotalError() {
   double result = -K[0] * p_error - K[1] * d_error - K[2] * i_error;
-  error += result * result;
   counter++;
   return result;
 }
@@ -48,10 +46,15 @@ double PID::TotalError() {
 double PID::getSumDp() { return D[0] + D[1] + D[2]; }
 
 void PID::Twiddle() {
-  // 1. increase
-  double currentRMS = sqrt(error / counter);
-  if (bestRMS < counter) {
-    bestRMS = counter;
+  // check if vehicle was able to travel longer than before on the track.
+  bool isThisRoundBetter = false;
+  if (maxCounter < counter) {
+    isThisRoundBetter = true;
+  }
+
+  // twiddle the PID parameter
+  if (isThisRoundBetter) {
+    maxCounter = counter;
     D[tunedParamIndex] *= 1.1;
   } else {
     K[tunedParamIndex] -= D[tunedParamIndex];
@@ -61,7 +64,6 @@ void PID::Twiddle() {
   tunedParamIndex = tunedParamIndex % 3;
   K[tunedParamIndex] += D[tunedParamIndex];
 
-  twiddled = true;
-  error = 0;
+  // reset
   counter = 0;
 }
