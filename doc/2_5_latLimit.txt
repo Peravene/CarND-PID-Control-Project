@@ -1,0 +1,39 @@
+  double Kp_init = 0.1;
+  double Ki_init = 0.0;
+  double Kd_init = 0.0;
+  
+    D[0] = 0.1;
+  D[1] = 0.1;
+  D[2] = 0.01;
+
+
+Listening to port 4567
+Connected!!!
+counter: 382 Kp: 0.1 Kd: 0.1 Ki: 0 Dp: 0.11 Dd: 0.1 Di: 0.1 bestRMS: 382
+Connected!!!
+counter: 440 Kp: 0.1 Kd: 0.1 Ki: 0.1 Dp: 0.11 Dd: 0.11 Di: 0.1 bestRMS: 440
+Connected!!!
+counter: 54 Kp: 0.21 Kd: 0.1 Ki: 0 Dp: 0.11 Dd: 0.11 Di: 0.09 bestRMS: 440
+Connected!!!
+counter: 376 Kp: 0.1 Kd: 0.21 Ki: 0 Dp: 0.099 Dd: 0.11 Di: 0.09 bestRMS: 440
+Connected!!!
+counter: 755 Kp: 0.1 Kd: 0.21 Ki: 0.09 Dp: 0.099 Dd: 0.121 Di: 0.09 bestRMS: 755
+Connected!!!
+counter: 54 Kp: 0.199 Kd: 0.21 Ki: 0 Dp: 0.099 Dd: 0.121 Di: 0.081 bestRMS: 755
+Connected!!!
+counter: 551 Kp: 0.1 Kd: 0.331 Ki: 0 Dp: 0.0891 Dd: 0.121 Di: 0.081 bestRMS: 755
+Connected!!!
+counter: 776 Kp: 0.1 Kd: 0.331 Ki: 0.081 Dp: 0.0891 Dd: 0.1331 Di: 0.081 bestRMS: 776
+Connected!!!
+counter: 56 Kp: 0.1891 Kd: 0.331 Ki: 0 Dp: 0.0891 Dd: 0.1331 Di: 0.0729 bestRMS: 776
+Connected!!!
+counter: 1062 Kp: 0.1891 Kd: 0.4641 Ki: 0 Dp: 0.09801 Dd: 0.1331 Di: 0.0729 bestRMS: 1062                         ->>>> goood one round possible      Kp: 0.1891 Kd: 0.4641 
+Connected!!!
+counter: 12056 Kp: 0.1891 Kd: 0.4641 Ki: 0.0729 Dp: 0.09801 Dd: 0.14641 Di: 0.0729 bestRMS: 12056
+Connected!!!
+counter: 54 Kp: 0.28711 Kd: 0.4641 Ki: 0 Dp: 0.09801 Dd: 0.14641 Di: 0.06561 bestRMS: 12056
+Connected!!!
+counter: 790 Kp: 0.1891 Kd: 0.61051 Ki: 0 Dp: 0.088209 Dd: 0.14641 Di: 0.06561 bestRMS: 12056
+
+
+->>>> goood one round possible
