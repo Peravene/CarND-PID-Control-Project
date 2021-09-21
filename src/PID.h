@@ -31,7 +31,11 @@ class PID {
    */
   double TotalError();
 
- private:
+  /**
+   * Update parameter with twiddle algo
+   */
+  void Twiddle();
+
   /**
    * PID Errors
    */
@@ -41,10 +45,17 @@ class PID {
 
   /**
    * PID Coefficients
-   */ 
-  double Kp;
-  double Ki;
-  double Kd;
+   */
+  double K[3];
+
+  /**
+   * Twiddle Variables
+   */
+  double D[3];
+  int tunedParamIndex;
+  double maxCounter;
+  int counter;
+  double latLimit;
 };
 
 #endif  // PID_H
