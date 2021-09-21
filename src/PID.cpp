@@ -28,7 +28,7 @@ void PID::Init(double Kp_, double Ki_, double Kd_) {
   tunedParamIndex = 0;
   maxCounter = 0;
   counter = 0;
-  latLimit = 2.2;
+  latLimit = 2.5;
 }
 
 void PID::UpdateError(double cte) {
@@ -42,8 +42,6 @@ double PID::TotalError() {
   counter++;
   return result;
 }
-
-double PID::getSumDp() { return D[0] + D[1] + D[2]; }
 
 void PID::Twiddle() {
   // check if vehicle was able to travel longer than before on the track.

@@ -37,12 +37,6 @@ class PID {
   void Twiddle();
 
   /**
-   * Calculates the sum of the twiddle coefficients
-   * @output The sum
-   */
-  double getSumDp();
-
-  /**
    * PID Errors
    */
   double p_error;
