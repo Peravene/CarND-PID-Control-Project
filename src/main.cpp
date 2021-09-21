@@ -42,15 +42,20 @@ int main() {
    * INIT PID Coefficients
    */
 
-  // 2.2 - latLimit
-  double Kp_init = 0.170478;
-  double Ki_init = 0.4641;
-  double Kd_init = 0;
+  // Manual
+  // double Kp_init = 0.5;
+  // double Ki_init = 0.5;
+  // double Kd_init = 0;
 
   // 2.5 - latLimit
   // double Kp_init = 0.1891;
   // double Ki_init = 0.4641;
   // double Kd_init = 0;
+
+  // 2.2 - latLimit
+  double Kp_init = 0.170478;
+  double Ki_init = 0.4641;
+  double Kd_init = 0;
 
   pid.Init(Kp_init, Ki_init, Kd_init);
 
